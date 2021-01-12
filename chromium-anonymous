@@ -1,0 +1,45 @@
+#!/bin/bash
+
+is_tor_running() {
+    systemctl is-active --quiet tor
+}
+
+start_tor() {
+    error_file=/tmp/chromium-anonymous_$$.start_tor_error.log
+    systemctl start tor 2> $error_file
+    start_tor_error=$(cat $error_file)
+}
+
+stop_tor() {
+    error_file=/tmp/chromium-anonymous_$$.stop_tor_error.log
+    systemctl stop tor 2> $error_file
+    stop_tor_error=$(cat $error_file)
+}
+
+# Memorizing Tor run state
+if is_tor_running; then was_tor_running=true; else was_tor_running=false; fi
+
+# Try to run Tor.
+if ! is_tor_running; then start_tor; fi
+
+# If Tor is not running, something is wrong.
+# Message error and exit.
+if ! is_tor_running; then
+    echo $start_tor_error
+    zenity --error --width 500 --text "$start_tor_error"
+    exit 1
+fi
+
+# Run Chromium Privacy with Tor proxy in incognito mode.
+chromium-browser-privacy --proxy-server=socks://localhost:9050 --incognito
+
+# If Tor was started before, then we try to stop it until it is stopped, sending messages.
+while ! $was_tor_running && is_tor_running; do
+    stop_tor
+    if is_tor_running; then
+        echo $stop_tor_error
+        message_text="$stop_tor_error\n\n<b>Since Tor was not runnig before, need to stop it.\nAfter closing this window will try to stop Tor again.</b>"
+        zenity --error --width 500 --text "$message_text"
+    fi
+done
+
