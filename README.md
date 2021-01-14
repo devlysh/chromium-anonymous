@@ -4,7 +4,6 @@ Run Chromium Privacy under Tor in few clicks (Fedora vesrion)
 The way to keep 1.1.1.3 DNS but use rest of the internet as well.
 
 ## Install
-`$ chmod +x ./install.sh`
 `$ source ./install.sh`
 
 ## Usage
