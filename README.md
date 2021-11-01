@@ -1,5 +1,5 @@
 # chromium-anonymous
-Run Chromium Privacy under Tor in few clicks (Fedora vesrion)
+Run Chromium Privacy under Tor in few clicks (Fedora version)
 
 The way to keep 1.1.1.3 DNS but use rest of the internet as well.
 
